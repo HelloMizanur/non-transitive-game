@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const Table = require('cli-table3');
 
 class Validator {
     static validateMoves(moves) {
@@ -36,24 +37,26 @@ class GameRules {
     }
 
     generateHelpTable() {
-        const moveCount = this.moves.length;
-        let table = '    ' + this.moves.map(move => move.padEnd(7)).join('') + '\n';
+        const table = new Table({
+            head: ['', ...this.moves],
+            colWidths: new Array(this.moves.length + 1).fill(10)
+        });
 
-        for (let i = 0; i < moveCount; i++) {
-            table += this.moves[i].padEnd(4) + ' ';
-            for (let j = 0; j < moveCount; j++) {
+        for (let i = 0; i < this.moves.length; i++) {
+            const row = [this.moves[i]];
+            for (let j = 0; j < this.moves.length; j++) {
                 if (i === j) {
-                    table += 'Draw   ';
-                } else if ((i < j && j <= i + moveCount / 2) || (i > j && j + moveCount <= i + moveCount / 2)) {
-                    table += 'Win    ';
+                    row.push('Draw');
+                } else if ((i < j && j <= i + this.moves.length / 2) || (i > j && j + this.moves.length <= i + this.moves.length / 2)) {
+                    row.push('Win');
                 } else {
-                    table += 'Lose   ';
+                    row.push('Lose');
                 }
             }
-            table += '\n';
+            table.push(row);
         }
 
-        return table;
+        return table.toString();
     }
 }
 
